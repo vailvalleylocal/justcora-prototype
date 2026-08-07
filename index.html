@@ -16,13 +16,13 @@
   <aside class="side">
     <div class="brand"><div class="seal">JC</div><div><b>JustCORA</b><small>Records workspace</small></div></div>
     <nav class="nav">
-      <button class="active" data-view="dashboard">⌂ <span>Overview</span></button>
-      <button data-view="dashboard">▤ <span>Requests</span><em class="count">24</em></button>
-      <button>▣ <span>Document review</span><em class="count">8</em></button>
-      <button>✉ <span>Correspondence</span><em class="count">3</em></button>
-      <button>◷ <span>Time &amp; fees</span></button>
-      <button>✓ <span>Productions</span></button>
-      <button>⌕ <span>Audit &amp; reports</span></button>
+      <button class="active" data-nav="overview">⌂ <span>Overview</span></button>
+      <button data-nav="requests">▤ <span>Requests</span><em class="count">24</em></button>
+      <button data-nav="documents">▣ <span>Document review</span><em class="count">8</em></button>
+      <button data-nav="correspondence">✉ <span>Correspondence</span><em class="count">3</em></button>
+      <button data-nav="fees">◷ <span>Time &amp; fees</span></button>
+      <button data-nav="productions">✓ <span>Productions</span></button>
+      <button data-nav="audit">⌕ <span>Audit &amp; reports</span></button>
     </nav>
     <div class="profile"><div class="avatar">AM</div><div><b>Alex Morgan</b><small>Records Coordinator</small></div></div>
   </aside>
@@ -86,7 +86,10 @@
     due:{title:'7 requests due this week',eyebrow:'Deadline control',quality:'Deadline calculations are independently recorded, reminders escalate automatically, and extensions require a reason and audit entry.',rows:[['CORA-26-1247','Traffic signal timing records','Aug 11','4 days'],['CORA-26-1243','Purchasing card transactions','Aug 12','5 days'],['CORA-26-1241','Sheriff training materials','Aug 12','Fee pending'],['CORA-26-1239','Planning correspondence','Aug 14','7 days']]},
     review:{title:'1,842 documents in review',eyebrow:'Document review',quality:'Files retain immutable originals and hashes. Review exceptions, inconsistent redaction codes, duplicates, and unreadable pages are surfaced here.',rows:[['428 files','Traffic signal timing records','68%','4 exceptions'],['617 files','Planning correspondence','41%','12 exceptions'],['396 files','Contract solicitation records','83%','QC clear'],['401 files','Employee travel expenses','22%','6 exceptions']]},
     production:{title:'3 productions awaiting approval',eyebrow:'Release control',quality:'No file can be produced until the exact version is approved by two people, redactions are burned in, hidden content is tested, and the manifest is sealed.',rows:[['CORA-26-1218','Road maintenance contracts','Final approval','2 checks'],['CORA-26-1207','Public meeting recordings','Validation','QC clear'],['CORA-26-1199','Vendor payment register','Legal sign-off','1 check']]},
-    attention:{title:'Items needing attention',eyebrow:'Exception queue',quality:'Exceptions cannot be dismissed silently. Resolution requires an owner, reason, timestamp, and—when material—independent approval.',rows:[['Overdue','CORA-26-1218 production approval','Release','2 days'],['Unmatched','Requester portal message','Correspondence','48 min'],['Expiring','CORA-26-1241 fee estimate','Finance','Today']]}
+    attention:{title:'Items needing attention',eyebrow:'Exception queue',quality:'Exceptions cannot be dismissed silently. Resolution requires an owner, reason, timestamp, and—when material—independent approval.',rows:[['Overdue','CORA-26-1218 production approval','Release','2 days'],['Unmatched','Requester portal message','Correspondence','48 min'],['Expiring','CORA-26-1241 fee estimate','Finance','Today']]},
+    correspondence:{title:'3 correspondence items need action',eyebrow:'Correspondence center',quality:'Every external message is tied to a request, retained in the audit trail, and mirrored by a no-reply Gmail notice. Users reply only through JustCORA.',rows:[['Unread','Jordan Lee added scope clarification','Requester','48 min'],['Draft','Fee estimate for CORA-26-1241','Internal review','Today'],['Due','Status update for CORA-26-1247','Requester','Aug 11']]},
+    fees:{title:'Time and fee activity',eyebrow:'Cost control',quality:'Time entries require a request, activity type, worker, duration, and timestamp. Estimates and waivers require approval before requester delivery.',rows:[['$184.50','CORA-26-1241 fee estimate','Awaiting payment','Expires today'],['3.4 hrs','CORA-26-1247 review time','Recorded','QC clear'],['Waiver','CORA-26-1204 public interest','Approval needed','1 check']]},
+    audit:{title:'Audit and reporting activity',eyebrow:'Defensible record',quality:'Audit entries are append-only and capture actor, time, action, affected version, and integrity evidence. Corrections create new entries instead of replacing history.',rows:[['18 min','17 documents approved','Maya Chen','Hashes retained'],['1 hr','236 files uploaded','J. Alvarez','Manifest sealed'],['2 hrs','Production package released','Alex Morgan','Audit complete'],['Yesterday','Fee waiver approved','County Attorney','Reason recorded']]}
   };
   const additionalRequests=['Employee travel reimbursements','Zoning variance applications','Fleet maintenance invoices','Board executive session notices','Public health inspection reports','Election equipment service logs','Parks pesticide applications','County broadband agreements','Jail commissary contracts','Emergency dispatch statistics','Property assessment appeals','Airport noise correspondence','Water quality sampling results','Road closure permits','Library meeting room records','Capital project change orders','Risk management claim logs','IT software purchase records','Open meetings training records'];
   additionalRequests.forEach((name,i)=>drillData.open.rows.push([`CORA-26-${1227-i}`,name,i%3===0?'Collection':i%3===1?'In review':'Intake',i%5===0?'QC: 1':'QC: clear']));
@@ -94,6 +97,19 @@
   function closeDrill(){document.getElementById('drillModal').classList.remove('open')}
   function openQuality(name){document.getElementById('drillTitle').textContent=name;document.getElementById('drillEyebrow').textContent='Quality control gate';document.getElementById('drillQuality').textContent='Required evidence is retained in the audit trail. Failed or incomplete checks prevent the request from advancing.';document.getElementById('drillList').innerHTML=['Required fields complete','Assigned reviewer confirmed','Exceptions resolved with reasons','Independent approval recorded','Audit evidence preserved'].map((x,i)=>`<div class="drill-row"><b>${i<2?'✓ Complete':'○ Pending'}</b><div><b>${x}</b><small>${i<2?'Verified by Alex Morgan':'Must be completed before advancement'}</small></div><span class="status ${i<2?'review':'legal'}">${i<2?'Verified':'Required'}</span><button class="link" onclick="event.stopPropagation();toast('Quality evidence opened')">Evidence</button></div>`).join('');document.getElementById('drillModal').classList.add('open')}
   function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+  function setActiveNav(button){document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));button.classList.add('active')}
+  function showWorkspaceSection(heading){openCase();const card=[...document.querySelectorAll('.workspace .card')].find(c=>c.querySelector('h2')?.textContent.trim()===heading);if(card)setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),50)}
+  document.querySelectorAll('.nav button[data-nav]').forEach(button=>button.addEventListener('click',()=>{
+    setActiveNav(button);
+    const destination=button.dataset.nav;
+    if(destination==='overview'){showDashboard();return}
+    if(destination==='requests'){showDashboard();openDrill('open');return}
+    if(destination==='documents'){showWorkspaceSection('Document workspace');return}
+    if(destination==='correspondence'){showWorkspaceSection('Correspondence');return}
+    if(destination==='fees'){showDashboard();openDrill('fees');return}
+    if(destination==='productions'){showDashboard();openDrill('production');return}
+    if(destination==='audit'){showDashboard();openDrill('audit')}
+  }));
   modal.addEventListener('click',e=>{if(e.target===modal)closeCompose()});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCompose()});
   document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));c.classList.add('active')}));
